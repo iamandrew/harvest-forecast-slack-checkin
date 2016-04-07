@@ -10,10 +10,10 @@ module.exports = (personActivity, projects, clients) => {
 
       if (project.client_id === parseInt(process.env.CLIENT_ID_INTERNAL)) {
         // if internal, use project name and make it lowercase
-        return `_${project.name.toLowerCase()}_`;
+        return `*_${project.name.toLowerCase()}_*`;
       }
 
       // otherwise use client name
-      return `_${clients[project.client_id].name}_`;
+      return `*_${clients[project.client_id].name}_*`;
     });
 };

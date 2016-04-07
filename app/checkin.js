@@ -49,18 +49,17 @@ Promise.all([
   people.forEach(p => {
     // get person activity for current day
     let personActivity = activity.get(p, assignments);
-
     if (personActivity.length === 0) {
       // no entry for person
-      msg.push(`${personName(p)} got no entry for today.`);
+      msg.push(`${personName(p)} -  has no entry for today.`);
     } else if (personActivity.length === 1 && personActivity[0].project_id === parseInt(process.env.PROJECT_ID_TIME_OFF)) {
       // person got time off and does nothing else
       let endDate = personTimeOff(personActivity);
-      msg.push(`${personName(p)} is off and will be back ${endDate.format("YYYY-MM-DD")}.`);
+      msg.push(`${personName(p)}  -  is off and will be back ${endDate.format("YYYY-MM-DD")}.`);
     } else {
       // normal assignments (but ignore partial day time off)
       let activities = personActivities(personActivity, projects, clients);
-      msg.push(`${personName(p)} will work with ${conjunct(activities)}.`);
+      msg.push(`${personName(p)}  -   will be working on ${conjunct(activities)}.`);
     }
   });
 
