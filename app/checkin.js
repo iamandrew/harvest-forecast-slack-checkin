@@ -48,33 +48,54 @@ Promise.all([
     let devmsg = [];
     let desmsg = [];
     let testmsg = [];
+    let supportmsg = ['Your support agents for today are:', '*Michael Sutton* - Application Support', '*Andy White* - Application Support', '*Csaba Cloner* - Application Support'];
+    let support = false;
 
     people.forEach(p => {
         if (p.archvied == true) {
             return;
         }
+        let support = false;
         // get person activity for current day
         let personActivity = activity.get(p, assignments);
-        if (personActivity.length === 0) {
-            // no entry for person
-            let text = `${personName(p)}    -  No entry for today.`;
 
-            for(var i = 0; i < p.teams.length; i++) {
-                if(p.teams[i] == 'Developer') {
-                    devmsg.push(text);
-                    return;
-                }
-                if(p.teams[i] == 'Tester') {
-                    testmsg.push(text);
-                    return;
-                }
-                if(p.teams[i] == 'Front-end') {
-                    femsg.push(text);
-                    return;
-                }
-                if(p.teams[i] == 'Design') {
-                    desmsg.push(text);
-                    return;
+        for(var i = 0; i < personActivity.length; i++) {
+            if (personActivity[i].project_id == 378265) {
+                let text = `${personName(p)} - Dev Support`
+                supportmsg.push(text);
+                personActivity.splice[i, 1];
+                support = true;
+            }
+            if (personActivity[i].project_id == 377993) {
+                let text = `${personName(p)} - Design Support`
+                supportmsg.push(text);
+                personActivity.splice[i, 1];
+                support = true;
+            }
+        }
+
+        if (personActivity.length === 0) {
+            if (support == false) {
+                // no entry for person
+                let text = `${personName(p)}    -  No entry for today.`;
+
+                for(var i = 0; i < p.teams.length; i++) {
+                    if(p.teams[i] == 'Developer') {
+                        devmsg.push(text);
+                        return;
+                    }
+                    if(p.teams[i] == 'Tester') {
+                        testmsg.push(text);
+                        return;
+                    }
+                    if(p.teams[i] == 'Front-end') {
+                        femsg.push(text);
+                        return;
+                    }
+                    if(p.teams[i] == 'Design') {
+                        desmsg.push(text);
+                        return;
+                    }
                 }
             }
         } else if (personActivity.length === 1 && personActivity[0].project_id === parseInt(process.env.PROJECT_ID_TIME_OFF)) {
@@ -103,6 +124,7 @@ Promise.all([
             // normal assignments (but ignore partial day time off)
             let activities = personActivities(personActivity, projects, clients);
             let text = `${personName(p)}    - Working on ${conjunct(activities)}.`;
+
             for(var i = 0; i < p.teams.length; i++) {
                 if(p.teams[i] == 'Developer') {
                     devmsg.push(text);
@@ -123,6 +145,7 @@ Promise.all([
             }
         }
     });
+
 
     // send as Slack msg
     slack.send({
@@ -172,6 +195,17 @@ Promise.all([
                 "fields": [
                     {
                         "value": testmsg.join("\n"),
+                        "short": false
+                    }
+                ]
+            },
+            {
+                "pretext": `SUPPORT`,
+                "color": "#e74c3c",
+                "mrkdwn_in": ["pretext", "text", "fields"],
+                "fields": [
+                    {
+                        "value": supportmsg.join("\n"),
                         "short": false
                     }
                 ]
